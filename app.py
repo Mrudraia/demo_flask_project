@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request, render_template_string, abort
 from prometheus_client import generate_latest, REGISTRY, Counter, Gauge, Histogram
 import random, time
-import requests
 import json
 
 app = Flask(__name__)
