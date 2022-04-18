@@ -3,7 +3,12 @@ from prometheus_client import generate_latest, REGISTRY, Counter, Gauge, Histogr
 import random, time
 import json
 
+from flask_cors import CORS, cross_origin
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+
 
 REQUESTS = Counter('http_requests_total', 'Total HTTP Requests (count)', ['method', 'endpoint', 'status_code'])
 IN_PROGRESS = Gauge('http_requests_inprogress', 'Number of in progress HTTP requests')
@@ -11,6 +16,7 @@ TIMINGS = Histogram('http_requests_duration_seconds', 'HTTP request latency (sec
 
 
 @app.route("/")
+@cross_origin()
 @TIMINGS.time()
 @IN_PROGRESS.track_inprogress()
 def hello_world():
@@ -19,6 +25,7 @@ def hello_world():
     
     
 @app.route("/prometheus-course/<name>")
+@cross_origin()
 @IN_PROGRESS.track_inprogress()
 @TIMINGS.time()
 def greet():
@@ -28,6 +35,7 @@ def greet():
 
 
 @app.route('/post_json', methods=['POST'])
+@cross_origin()
 def process_json():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
@@ -39,6 +47,7 @@ def process_json():
         
 ### Prometheus APIs
 @app.route('/metrics')
+@cross_origin()
 @IN_PROGRESS.track_inprogress()
 @TIMINGS.time()
 def metrics():
